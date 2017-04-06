@@ -2,6 +2,11 @@
 
 A lru store for browser. It is better to use with [store](https://github.com/marcuswestin/store.js)
 
+[![Build Status](https://travis-ci.org/vicanso/lru-store.svg?branch=master)](https://travis-ci.org/vicanso/lru-store)
+[![Coverage Status](https://img.shields.io/coveralls/vicanso/lru-store/master.svg?style=flat)](https://coveralls.io/r/vicanso/lru-store?branch=master)
+[![npm](http://img.shields.io/npm/v/lru-store.svg?style=flat-square)](https://www.npmjs.org/package/lru-store)
+[![Github Releases](https://img.shields.io/npm/dm/lru-store.svg?style=flat-square)](https://github.com/vicanso/lru-store)
+
 ## Installation
 
 ```bash
