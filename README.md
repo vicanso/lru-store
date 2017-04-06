@@ -1,6 +1,6 @@
 # lru-store
 
-A lru store for browser, it's based on [store](https://github.com/marcuswestin/store.js)
+A lru store for browser. It is better to use with [store](https://github.com/marcuswestin/store.js)
 
 ## Installation
 
@@ -10,10 +10,22 @@ $ npm install lru-store
 
 ## API
 
+### constructor
+
+- `options`
+
+  - `options.namespace` The namespace for store
+
+  - `options.max` The limit of store
+
+- `store` The store client for lru, default is `MemoryStore`. It's better to use [store](https://github.com/marcuswestin/store.js).
 
 ```js
 const LRUStore = require('lru-store');
-const store = new LRUStore('my-cache', 10);
+const store = new LRUStore({
+  namespace: 'my-cache',
+  max: 10,
+});
 store.set('tree', {
   vip: false,
   amount: 10,
@@ -31,7 +43,10 @@ Set the value to store
 
 ```js
 const LRUStore = require('lru-store');
-const store = new LRUStore('my-cache', 10);
+const store = new LRUStore({
+  namespace: 'my-cache',
+  max: 10,
+});
 store.set('tree', {
   vip: false,
   amount: 10,
@@ -47,7 +62,10 @@ Get the value from store
 
 ```js
 const LRUStore = require('lru-store');
-const store = new LRUStore('my-cache', 10);
+const store = new LRUStore({
+  namespace: 'my-cache',
+  max: 10,
+});
 const info = store.get('tree');
 ```
 
@@ -59,7 +77,10 @@ Remove the value from store
 
 ```js
 const LRUStore = require('lru-store');
-const store = new LRUStore('my-cache', 10);
+const store = new LRUStore({
+  namespace: 'my-cache',
+  max: 10,
+});
 store.remove('tree');
 ```
 
@@ -69,7 +90,10 @@ List all key of the store
 
 ```js
 const LRUStore = require('lru-store');
-const store = new LRUStore('my-cache', 10);
+const store = new LRUStore({
+  namespace: 'my-cache',
+  max: 10,
+});
 const keys = store.keys();
 ```
 
@@ -79,7 +103,10 @@ Clear all data from store
 
 ```js
 const LRUStore = require('lru-store');
-const store = new LRUStore('my-cache', 10);
+const store = new LRUStore({
+  namespace: 'my-cache',
+  max: 10,
+});
 store.clearAll();
 ```
 

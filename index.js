@@ -1,21 +1,42 @@
-const store = require('store');
-
-const namespaceSymbol = Symbol('namespace');
-const maxSymbol = Symbol('max');
+const optionsSymbol = Symbol('options');
 const cacheSymbol = Symbol('cache');
+
+class MemoryStore {
+  constructor() {
+    this.data = {};
+  }
+  set(key, value) {
+    this.data[key] = value;
+    return value;
+  }
+  get(key) {
+    return this.data[key];
+  }
+  remove(key) {
+    delete this.data[key];
+  }
+}
+
+const defaultStore = new MemoryStore();
 
 class LRUStore {
   /**
    * Create a LRU Store. The namespace for store's definition
    * and the max for the limit of store
+   * @param {Object} options - {namespace: String, max: Integer}
+   * @param {Store} store - the store client
    */
-  constructor(namespace, max) {
-    if (!namespace || !max) {
+  constructor(options, store) {
+    if (!options || !options.namespace || !options.max) {
       throw new Error('namespace and max param can\'t be null');
     }
-    this[namespaceSymbol] = namespace;
-    this[maxSymbol] = max;
-    const arr = store.get(namespace) || [];
+    this[optionsSymbol] = options;
+    const {
+      max,
+      namespace,
+    } = options;
+    this.store = store || defaultStore;
+    const arr = this.store.get(namespace) || [];
     if (arr.length > max) {
       arr.splice(0, arr.length - max);
     }
@@ -26,14 +47,14 @@ class LRUStore {
    * @return {String} the namespace name
    */
   get namespace() {
-    return this[namespaceSymbol];
+    return this[optionsSymbol].namespace;
   }
   /**
    * Get the limit size of store
    * @return {Integer} the max value
    */
   get max() {
-    return this[maxSymbol];
+    return this[optionsSymbol].max;
   }
   /**
    * Get the length of store
@@ -58,7 +79,7 @@ class LRUStore {
     if (cache.length > this.max) {
       cache.shift();
     }
-    store.set(this.namespace, cache);
+    this.store.set(this.namespace, cache);
     return value;
   }
   /**
@@ -72,9 +93,13 @@ class LRUStore {
     if (index === -1) {
       return null;
     }
+    // the latest one
+    if (index === cache.length - 1) {
+      return cache[index].value;
+    }
     const item = cache.splice(index, 1)[0];
     cache.push(item);
-    store.set(this.namespace, cache);
+    this.store.set(this.namespace, cache);
     return item.value;
   }
   /**
@@ -86,7 +111,7 @@ class LRUStore {
     const index = cache.findIndex(item => item.key === key);
     if (index !== -1) {
       cache.splice(index, 1);
-      store.set(this.namespace, cache);
+      this.store.set(this.namespace, cache);
     }
   }
   /**
@@ -102,7 +127,7 @@ class LRUStore {
    */
   clearAll() {
     this[cacheSymbol] = [];
-    store.remove(this.namespace);
+    this.store.remove(this.namespace);
   }
 }
 
