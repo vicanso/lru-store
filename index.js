@@ -1,3 +1,5 @@
+const EventEmitter = require('events');
+
 const optionsSymbol = Symbol('options');
 const cacheSymbol = Symbol('cache');
 
@@ -19,7 +21,7 @@ class MemoryStore {
 
 const defaultStore = new MemoryStore();
 
-class LRUStore {
+class LRUStore extends EventEmitter {
   /**
    * Create a LRU Store. The namespace for store's definition
    * and the max for the limit of store
@@ -30,6 +32,7 @@ class LRUStore {
     if (!options || !options.namespace || !options.max) {
       throw new Error('namespace and max param can\'t be null');
     }
+    super();
     this[optionsSymbol] = options;
     const {
       max,
@@ -70,16 +73,25 @@ class LRUStore {
    * @return {Any}
    */
   set(key, value) {
-    this.remove(key);
+    const updateItem = this.remove(key);
     const cache = this[cacheSymbol];
+    let removeItem = null;
     cache.push({
       key,
       value,
     });
     if (cache.length > this.max) {
-      cache.shift();
+      removeItem = cache.shift();
     }
     this.store.set(this.namespace, cache);
+    if (updateItem) {
+      this.emit('update', key);
+    } else {
+      this.emit('add', key);
+    }
+    if (removeItem) {
+      this.emit('remove', removeItem.key);
+    }
     return value;
   }
   /**
@@ -100,6 +112,7 @@ class LRUStore {
     const item = cache.splice(index, 1)[0];
     cache.push(item);
     this.store.set(this.namespace, cache);
+    this.emit('hit', key);
     return item.value;
   }
   /**
@@ -109,10 +122,12 @@ class LRUStore {
   remove(key) {
     const cache = this[cacheSymbol];
     const index = cache.findIndex(item => item.key === key);
+    let removeItem = null;
     if (index !== -1) {
-      cache.splice(index, 1);
+      removeItem = cache.splice(index, 1)[0];
       this.store.set(this.namespace, cache);
     }
+    return removeItem && removeItem.value;
   }
   /**
    * List all key of the store

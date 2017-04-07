@@ -88,7 +88,8 @@ describe('LRU-Store', (done) => {
       max: 2,
     });
     assert.equal(lruStore.length, 2);
-    lruStore.remove('tree');
+    const item = lruStore.remove('tree');
+    assert.equal(item.amount, 10);
     assert.equal(lruStore.length, 1);
   });
 
@@ -107,7 +108,10 @@ describe('LRU-Store', (done) => {
       namespace: 'my-custom-store',
       max: 2,
     }, store);
-
+    lruStore.once('update', key => assert.equal(key, 'jenny'));
+    lruStore.once('add', key => assert.equal(key, 'tree'));
+    lruStore.once('remove', key => assert.equal(key, 'tree'));
+    lruStore.once('hit', key => assert.equal(key, 'jenny'));
     lruStore.set('tree', {
       vip: false,
       amount: 10,

@@ -17,6 +17,8 @@ $ npm install lru-store
 
 ### constructor
 
+The LRU-Store extends EventEmitter
+
 - `options`
 
   - `options.namespace` The namespace for store
@@ -113,6 +115,22 @@ const store = new LRUStore({
   max: 10,
 });
 store.clearAll();
+```
+
+### on
+
+Adds the listener function for event
+
+```js
+const LRUStore = require('lru-store');
+const store = new LRUStore({
+  namespace: 'my-cache',
+  max: 10,
+});
+store.on('update', console.info);
+store.on('add', console.info);
+store.on('remove', console.info);
+store.on('hit', console.info);
 ```
 
 ## License
