@@ -146,4 +146,4 @@ class LRUStore extends EventEmitter {
   }
 }
 
-export default LRUStoe;
+export default LRUStore;
